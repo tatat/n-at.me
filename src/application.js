@@ -1,9 +1,10 @@
 "use strict";
 
 import Vue from 'vue';
+import { Repository } from 'repository';
+import App from 'app.vue';
 import config from 'config';
-import app from 'app.vue';
 
 document.addEventListener('DOMContentLoaded', () => {
-  new Vue(app).$mount('#doc');
+  const app = new Vue(App).$mount('#doc');
 });

@@ -12,6 +12,7 @@ import plumber from 'gulp-plumber';
 import webserver from 'gulp-webserver';
 import gulpif from 'gulp-if';
 import { argv } from 'yargs';
+import { Server as karma } from 'karma';
 import config from './config/application';
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
@@ -73,4 +74,11 @@ gulp.task('watch', () => {
 
 gulp.task('server', () => {
   return gulp.src(OUTPUT_DIR).pipe(webserver({host: HOST, port: PORT}))
+});
+
+gulp.task('test', (done) => {
+  new karma({
+    configFile: `${__dirname}/karma.conf.js`,
+    singleRun: true,
+  }, done).start();
 });
