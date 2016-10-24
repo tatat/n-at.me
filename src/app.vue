@@ -9,7 +9,9 @@
 <script>
 "use strict";
 
-export default {
+import { router } from 'routes';
 
+export default {
+  router,
 };
 </script>

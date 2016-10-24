@@ -8,8 +8,5 @@ Vue.use(VueRouter);
 
 export const router = new VueRouter({
   history: config.history,
-});
-
-router.map({
-
+  routes: [],
 });
