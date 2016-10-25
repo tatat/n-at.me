@@ -3,7 +3,9 @@
 
 <template lang="pug">
 .root
-  router-view
+  #content
+    .inner
+      router-view
 </template>
 
 <script>

@@ -2,7 +2,7 @@
 
 const config = JSON.parse(process.env.ENV);
 
-config.images = [
+config.illustrations = [
   {"id": ["2y7", "2g4trng925g"], "category": "original", "title": "小さな手"},
   {"id": ["mte", "1djeozlm2g8"], "category": "original", "title": "おいで"},
   {"id": ["xy1", "81tedn1nl3"], "category": "original", "title": "電車ごっこ"},
@@ -58,7 +58,7 @@ config.images = [
   {"id": ["fb0", "2Jfyl"], "category": "original", "title": "おうち（兵器）"},
   {"id": ["x2p", "XuLj0"], "category": "original", "title": "しとしと"},
   {"id": ["jew", "h6gvj"], "category": "original", "title": "雨雲"},
-  {"id": ["okz", "iWw08"], "category": "original", "title": "バス停"},
+  {"id": ["qrt", "okz", "iWw08"], "category": "original", "title": "バス停"},
   {"id": ["0tv", "BVLF1"], "category": "original", "title": "髪飾り"},
   {"id": ["v1e", "CXsFf"], "category": "original", "title": "箱"},
   {"id": ["hab", "22PhC"], "category": "original", "title": "上皿天秤"},
@@ -67,6 +67,8 @@ config.images = [
   {"id": ["mu4"], "category": "original", "title": "F"},
   {"id": ["ds8"], "category": "original", "title": "行かないの？"},
   {"id": ["e0I"], "category": "original", "title": ".."},
+  {"id": ["2y3"], "category": "original", "title": "トンネル"},
+  {"id": ["i9k"], "category": "original", "title": "通学"},
   {"id": ["ptf", "3rh717xqywow"], "category": "copyright", "title": "雪"},
   {"id": ["40e", "48ijrmo6xy04"], "category": "copyright", "title": "改変"},
   {"id": ["ta3", "6lxi8k07yf0g"], "category": "copyright", "title": "lain"},
