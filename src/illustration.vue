@@ -9,7 +9,7 @@
   .not-found
     display table
     width 100%
-    height 640px
+    height 600px
 
     > .inner
       display table-cell
