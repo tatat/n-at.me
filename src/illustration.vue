@@ -1,20 +1,14 @@
 <style lang="stylus">
-.illustration > .inner
-  padding 16px
+.illustration
+  display table
+  width 100%
+  min-height 600px
 
-  a,
-  img
-    display block
-
-  .not-found
-    display table
-    width 100%
-    height 600px
-
-    > .inner
-      display table-cell
-      vertical-align middle
-      text-align center
+  > .inner
+    padding 16px
+    display table-cell
+    vertical-align middle
+    text-align center
 </style>
 
 <template lang="pug">
@@ -23,8 +17,7 @@ article.illustration
     transition(name="fade-in")
       router-link(v-bind:to="{name: 'thumbnails'}", v-if="ready")
         img(v-if="data", v-bind:src="illustration_path")
-        .not-found(v-else)
-          .inner Not found
+        .not-found(v-else) Not found
 </template>
 
 <script>
