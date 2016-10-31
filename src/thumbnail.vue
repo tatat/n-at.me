@@ -6,7 +6,6 @@ a.thumbnail .placeholder
   display block
   width 120px
   height 120px
-  overflow hidden
 
 a.thumbnail:hover
   > .inner
@@ -15,12 +14,13 @@ a.thumbnail:hover
   .placeholder
     opacity 0
 
-a.thumbnail > .inner
-  background-position 0 0
-  opacity 0.1
-  transition opacity 0.5s linear 0s
-
 a.thumbnail
+  > .inner
+    background-position 0 0
+    background-repeat no-repeat
+    opacity 0.1
+    transition opacity 0.4s linear 0s
+
   .loading
     width 100%
     height 100%
@@ -35,11 +35,13 @@ a.thumbnail
     opacity 0.6
 
   .placeholder
-    background-position 120px 0
+    overflow hidden
+    background-position -120px 0
+    background-repeat no-repeat
     text-indent 100%
     white-space nowrap
     opacity 1
-    transition opacity 0.2s linear 0.3s
+    transition opacity 0.2s ease-in 0.2s
 </style>
 
 <template lang="pug">
