@@ -63,6 +63,10 @@ export default {
     };
   },
 
+  mounted() {
+    this.subtitle = null;
+  },
+
   components: {
     thumbnail: ThumbnailComponent,
   },

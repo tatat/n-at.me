@@ -25,5 +25,9 @@ article.errors
 <script>
 "use strict";
 
-export default {};
+export default {
+  mounted() {
+    this.subtitle = 'Not found';
+  },
+};
 </script>

@@ -37,6 +37,7 @@ export default {
 
   mounted() {
     this.ready = true;
+    this.subtitle = this.data ? this.data.title : 'Not found';
   },
 
   computed: {

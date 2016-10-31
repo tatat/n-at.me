@@ -36,7 +36,7 @@
   header
     .inner
       h1
-        router-link(v-bind:to="{name: 'thumbnails'}") n_at
+        router-link(v-bind:to="{name: 'thumbnails'}") {{shared_state.title}}
 
   #content
     .inner
