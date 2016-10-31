@@ -5,7 +5,7 @@
   min-height 600px
 
   > .inner
-    padding 16px
+    padding 0 16px
     display table-cell
     vertical-align middle
     text-align center

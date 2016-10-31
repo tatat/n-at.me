@@ -19,7 +19,7 @@
       color #FFFFFF
 
 .thumbnails > .inner
-  padding 16px
+  padding 0 16px
 
   &:after
     content ""
