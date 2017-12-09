@@ -60,6 +60,10 @@ a.thumbnail:hover
 
 a.thumbnail
   float left
+  margin-left 10px
+  margin-top 10px
+  border-radius 5%
+  overflow hidden
 
   > .inner
     background-position 0 0
@@ -87,5 +91,5 @@ a.thumbnail
     text-indent 100%
     white-space nowrap
     opacity 1
-    transition opacity 0.2s ease-in 0.2s
+    transition opacity 0.4s ease-in 0.2s
 </style>

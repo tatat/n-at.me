@@ -48,7 +48,10 @@ h2
   height 120px
   float left
   overflow hidden
-  margin 0
+  margin-left 10px
+  margin-top 10px
+  margin-bottom 0
+  margin-right 0
   line-height 120px
   text-align center
   font-size 105%
@@ -59,6 +62,8 @@ h2
 
 .thumbnails > .inner
   padding 8px 16px
+  margin-top -10px
+  margin-left -10px
 
   &:after
     content ""
