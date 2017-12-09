@@ -7,6 +7,9 @@ article.illustration
           img(v-bind:src="illustrationPath")
         .illustration-meta
           p.title {{ title }}
+          ul.links(v-if="links")
+            li.link(v-for="link in links")
+              a(v-bind:href="link") {{ link }}
       template(v-else)
         router-link(v-if="ready" v-bind:to="{ name: 'index' }")
           .not-found Not found
@@ -36,6 +39,10 @@ export default {
 
     illustration() {
       return this.$store.getters['illustrations/findById'](this.requestedId)
+    },
+
+    links() {
+      return this.illustration.links || null
     }
   }
 }
@@ -58,4 +65,11 @@ export default {
 
   .title
     font-weight bold
+
+  ul.links
+    list-style-type square
+    padding-left 1.65em
+
+    > li
+      line-height 1.5em
 </style>
