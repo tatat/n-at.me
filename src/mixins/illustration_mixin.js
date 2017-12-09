@@ -1,17 +1,21 @@
-"use strict";
+const getValueOf = (object, key) => object != null ? object[key] : null
 
 export default {
-  methods: {
-    id_for(data) {
-      return Array.isArray(data.id) ? data.id[0] : data.id;
+  computed: {
+    id() {
+      return getValueOf(this.illustration, 'primary_key')
     },
 
-    illustration_path_for(data) {
-      return `/images/illustrations/${this.id_for(data)}.jpg`;
+    title() {
+      return getValueOf(this.illustration, 'title')
     },
 
-    thumbnail_path_for(data) {
-      return `/images/illustrations/${this.id_for(data)}.thumb.jpg`;
+    thumbnailPath() {
+      return getValueOf(this.illustration, 'thumbnail_image_path')
     },
-  },
-};
+
+    illustrationPath() {
+      return getValueOf(this.illustration, 'image_path')
+    }
+  }
+}

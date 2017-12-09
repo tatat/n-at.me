@@ -1,42 +1,9 @@
-<style src="../node_modules/normalize.css/normalize.css"></style>
-<style src="./app.styl" lang="stylus"></style>
-<style lang="stylus">
-  .root > header > .inner,
-  .root > footer > .inner
-    padding 8px 16px
-
-  .root > header
-    h1
-      font-size 140%
-      margin 0
-
-      a:hover
-        text-decoration none
-
-  .root > footer
-    text-align right
-
-    nav
-      display inline-block
-
-    ul
-      padding 0
-      margin 0
-
-    li
-      display inline-block
-      margin-left 16px
-
-    small
-      margin-left 16px
-</style>
-
 <template lang="pug">
 .root
   header
     .inner
       h1
-        router-link(v-bind:to="{name: 'thumbnails'}") {{shared_state.title}}
+        router-link(v-bind:to="{name: 'index'}") {{ title }}
 
   #content
     .inner
@@ -49,7 +16,7 @@
           li
             a(href="https://twitter.com/__________t_t_") Twitter
           li
-            a(href="http://www.pixiv.net/member.php?id=103059") Pixiv
+            a(href="https://www.pixiv.net/member.php?id=103059") Pixiv
           li
             a(href="https://tataaat.deviantart.com/") deviantART
           li
@@ -61,25 +28,74 @@
           li
             a(href="#", @click.prevent="mailto") E-mail
           li
-            a(href="/images/banner.png") Banner
-      small.copyright &copy; 2016 tatあt
+            a(href="./images/banner.png") Banner
+
+      small.copyright &copy; 2017 tatあt
 </template>
 
 <script>
-"use strict";
-
-import { router } from 'routes';
-
 export default {
-  router,
+  name: 'app',
+
+  created() {
+    this.$store.subscribe((mutation, state) => {
+      if (mutation.type === 'SET_TITLE' || mutation.type === 'SET_SUB_TITLE') {
+        let title = state.title
+
+        if (state.subTitle)
+          title = `${ state.subTitle } - ${ title }`
+
+        document.title = title
+      }
+    })
+  },
+
+  computed: {
+    title() {
+      return this.$store.getters.title
+    }
+  },
 
   methods: {
     mailto() {
-      const username = 'ioiioioloo';
-      const domain = 'gmail.com';
+      const username = 'ioiioioloo'
+      const domain = 'gmail.com'
 
-      location.href = `mailto:${username}@${domain}`;
-    },
-  },
-};
+      location.href = `mailto:${username}@${domain}`
+    }
+  }
+}
 </script>
+
+<style src="../node_modules/normalize.css"></style>
+<style src="./app.styl" lang="stylus"></style>
+<style lang="stylus" scoped>
+.root > header > .inner,
+.root > footer > .inner
+  padding 8px 16px
+
+.root > header
+  h1
+    font-size 140%
+    margin 0
+
+    a:hover
+      text-decoration none
+
+.root > footer
+  text-align right
+
+  nav
+    display inline-block
+
+  ul
+    padding 0
+    margin 0
+
+  li
+    display inline-block
+    margin-left 16px
+
+  small
+    margin-left 16px
+</style>
