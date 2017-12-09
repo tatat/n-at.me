@@ -10,7 +10,7 @@ const build = () => {
   return new Promise((resolve, reject) => {
     const cp = spawn('npm', ['run', 'build'], { stdio: 'inherit' })
     cp.on('error', error => reject(error))
-    cp.on('close', () => resolve())
+    cp.on('close', (code, signal) => code === 0 ? resolve() : reject(new Error(`Exited with code ${ code }`)))
   })
 }
 
