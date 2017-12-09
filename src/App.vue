@@ -3,7 +3,7 @@
   header
     .inner
       h1
-        router-link(v-bind:to="{name: 'index'}") {{ title }}
+        router-link(v-bind:to="{ name: 'index' }") {{ title }}
 
   #content
     .inner
@@ -61,7 +61,7 @@ export default {
       const username = 'ioiioioloo'
       const domain = 'gmail.com'
 
-      location.href = `mailto:${username}@${domain}`
+      location.href = `mailto:${ username }@${ domain }`
     }
   }
 }

@@ -75,7 +75,7 @@ const actions = {}
 
 const mutations = {}
 
-module.exports = {
+export default {
   namespaced: true,
   state,
   getters,
