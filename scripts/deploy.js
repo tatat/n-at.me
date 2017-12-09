@@ -50,7 +50,7 @@ const deploy = () => {
         throw new Error(`Failed to transfer directory: ${ failed.join(', ') }`)
     })
   }).then(() => {
-    return ssh.execCommand(`for n in $(find "${ releasesDir }" -type d -maxdepth 1 -mindepth 1 | sort | head -n -5); do rm -rf "$n"; done`)
+    return ssh.execCommand(`IFS=$'\\n' sh -c 'for n in $(find "${ releasesDir }" -type d -maxdepth 1 -mindepth 1 | sort | head -n -5); do rm -rf "$n"; done'`)
   }).then(() => {
     return ssh.exec('ln', ['-snf', currentReleaseDir, currentDir])
   }).then(() => {
