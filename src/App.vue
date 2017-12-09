@@ -16,7 +16,7 @@
           li
             a(href="https://twitter.com/__________t_t_") Twitter
           li
-            a(href="https://www.pixiv.net/member.php?id=103059") Pixiv
+            a(href="https://pixiv.me/tatat") Pixiv
           li
             a(href="https://tataaat.deviantart.com/") deviantART
           li
