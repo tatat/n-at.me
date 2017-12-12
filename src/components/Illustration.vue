@@ -27,6 +27,15 @@ export default {
     }
   },
 
+  metaInfo() {
+    const meta = []
+
+    if (this.illustration)
+      meta.push({ name: 'thumbnail', content: this.illustration.image_path })
+
+    return { meta }
+  },
+
   mounted() {
     this.$store.commit('SET_SUB_TITLE', { subTitle: this.title || 'Not found' })
     this.ready = true

@@ -37,15 +37,16 @@
 export default {
   name: 'app',
 
+  metaInfo() {
+    return {
+      title: this.$store.getters.fullTitle
+    }
+  },
+
   created() {
     this.$store.subscribe((mutation, state) => {
       if (mutation.type === 'SET_TITLE' || mutation.type === 'SET_SUB_TITLE') {
-        let title = state.title
-
-        if (state.subTitle)
-          title = `${ state.subTitle } - ${ title }`
-
-        document.title = title
+        document.title = this.$store.getters.fullTitle
       }
     })
   },

@@ -11,7 +11,8 @@ const state = {
 
 const getters = {
   title: state => state.title,
-  subTitle: state => state.subTitle
+  subTitle: state => state.subTitle,
+  fullTitle: state => state.subTitle ? `${ state.subTitle } - ${ state.title }` : state.title
 }
 
 const actions = {}
