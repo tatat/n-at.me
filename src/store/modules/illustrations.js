@@ -47,6 +47,7 @@ const items = [
   { "id": ["Tg0"], "category": "original", "title": "Everything Dreamed It - Last Parade Records", "links": ["http://lastparaderecords.bandcamp.com/album/everything-dreamed-it"] },
   { "id": ["1Im"], "category": "original", "title": "Nostalgic Portrait - Foilverb", "links": ["https://bigbrother404.bandcamp.com/album/nostalgic-portrait", "https://lastparades.booth.pm/items/625396"] },
   { "id": ["x0O"], "category": "original", "title": "Ordinary - ポリスピカデリー", "links": ["http://www.nicovideo.jp/watch/sm32035455", "https://www.youtube.com/watch?v=0KghO_YPUV8"] },
+  { "id": ["7vQ"], "category": "original", "title": "fluffy" },
 ]
 
 items.forEach(item => {
@@ -56,7 +57,7 @@ items.forEach(item => {
 })
 
 const state = {
-  items 
+  items
 }
 
 const getters = {
