@@ -48,6 +48,8 @@ const items = [
   { "id": ["1Im"], "category": "original", "title": "Nostalgic Portrait - Foilverb", "links": ["https://bigbrother404.bandcamp.com/album/nostalgic-portrait", "https://lastparades.booth.pm/items/625396"] },
   { "id": ["x0O"], "category": "original", "title": "Ordinary - ポリスピカデリー", "links": ["http://www.nicovideo.jp/watch/sm32035455", "https://www.youtube.com/watch?v=0KghO_YPUV8"] },
   { "id": ["7vQ"], "category": "original", "title": "fluffy" },
+  { "id": ["U4w"], "category": "original", "title": "2018" },
+  { "id": ["4Eh"], "category": "original", "title": "bury" },
 ]
 
 items.forEach(item => {
