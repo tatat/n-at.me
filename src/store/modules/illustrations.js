@@ -51,6 +51,8 @@ const items = [
   { "id": ["U4w"], "category": "original", "title": "2018" },
   { "id": ["4Eh"], "category": "original", "title": "bury" },
   { "id": ["Q6n"], "category": "original", "title": "cell" },
+  { "id": ["Sj8"], "category": "original", "title": "Solitary Battlefields EP - Foilverb", "links": ["https://booth.pm/ja/items/887573"] },
+  { "id": ["bT6"], "category": "original", "title": "follow" },
 ]
 
 items.forEach(item => {
