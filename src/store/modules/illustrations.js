@@ -53,6 +53,9 @@ const items = [
   { "id": ["Q6n"], "category": "original", "title": "cell" },
   { "id": ["Sj8"], "category": "original", "title": "Solitary Battlefields EP - Foilverb", "links": ["https://booth.pm/ja/items/887573"] },
   { "id": ["bT6"], "category": "original", "title": "follow" },
+  { "id": ["7vN"], "category": "original", "title": "the end of whitenote - Foilverb & Sourin", "links": ["https://bigbrother404.bandcamp.com/album/the-end-of-whitenote"] },
+  { "id": ["b8A"], "category": "original", "title": "drip" },
+  { "id": ["H5p"], "category": "original", "title": "2020" },
 ]
 
 items.forEach(item => {

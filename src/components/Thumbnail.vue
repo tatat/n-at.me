@@ -65,9 +65,12 @@ a.thumbnail
   border-radius 5%
   overflow hidden
 
+  > .inner, .placeholder
+    background-repeat no-repeat
+    background-size 240px 120px
+
   > .inner
     background-position 0 0
-    background-repeat no-repeat
     opacity 0.1
     transition opacity 0.4s linear 0s
 
@@ -79,15 +82,14 @@ a.thumbnail
     left 0
     z-index 9
     background-position center center
-    background-image url(/images/loading.gif)
+    background-image url(/images/loading.svg)
     background-repeat no-repeat
-    background-color #000000
+    background-size 48px 48px
     opacity 0.6
 
   .placeholder
     overflow hidden
     background-position -120px 0
-    background-repeat no-repeat
     text-indent 100%
     white-space nowrap
     opacity 1

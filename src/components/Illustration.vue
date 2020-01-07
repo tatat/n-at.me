@@ -65,9 +65,13 @@ export default {
 
   > .inner
     padding 8px 16px
+    width 1280px
     display table-cell
     vertical-align middle
     text-align center
+
+  img
+    width 1280px
 
 .illustration-meta
   text-align left
