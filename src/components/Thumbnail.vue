@@ -85,6 +85,7 @@ a.thumbnail
     background-image url(/images/loading.svg)
     background-repeat no-repeat
     background-size 48px 48px
+    background-color #000
     opacity 0.6
 
   .placeholder
