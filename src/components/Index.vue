@@ -4,12 +4,13 @@ article.illustrations
   .thumbnails
     .inner
       template(v-for="category in categories")
-        h2 {{ category }}
-        Thumbnail(
+        .tile
+          h2 {{ category }}
+        .tile(
           v-for="illustration in illustrationsByCategory(category)"
-          v-bind:illustration="illustration"
           key="illustration.primary_key"
         )
+          Thumbnail(v-bind:illustration="illustration")
 </template>
 
 <script>
@@ -46,12 +47,8 @@ h2
   display block
   width 120px
   height 120px
-  float left
   overflow hidden
-  margin-left 10px
-  margin-top 10px
-  margin-bottom 0
-  margin-right 0
+  margin 0
   line-height 120px
   text-align center
   font-size 105%
@@ -62,13 +59,32 @@ h2
 
 .thumbnails > .inner
   padding 8px 16px
-  margin-top -10px
+  display flex
+  flex-direction row
+  flex-wrap wrap
   margin-left -10px
+  margin-top -10px
 
-  &:after
-    content ""
-    display block
-    width 0
-    height 0
-    clear both
+.tile
+  width 120px
+  height 120px
+  margin-left 10px
+  margin-top 10px
+
+@media screen and (max-width: 541px)
+  h2
+    width 30vw
+    height 30vw
+    line-height 30vw
+
+  .thumbnails > .inner
+    padding 2vw 3vw
+    margin-left -2vw
+    margin-top -2vw
+
+  .tile
+    width 30vw
+    height 30vw
+    margin-left 2vw
+    margin-top 2vw
 </style>

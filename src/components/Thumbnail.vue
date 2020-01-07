@@ -59,9 +59,6 @@ a.thumbnail:hover
     opacity 0
 
 a.thumbnail
-  float left
-  margin-left 10px
-  margin-top 10px
   border-radius 5%
   overflow hidden
 
@@ -95,4 +92,18 @@ a.thumbnail
     white-space nowrap
     opacity 1
     transition opacity 0.4s ease-in 0.2s
+
+@media screen and (max-width: 541px)
+  a.thumbnail
+  a.thumbnail > .inner,
+  a.thumbnail .placeholder
+    width 30vw
+    height 30vw
+
+  a.thumbnail
+    > .inner, .placeholder
+      background-size 60vw 30vw
+
+    .placeholder
+      background-position -30vw 0
 </style>

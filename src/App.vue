@@ -85,6 +85,7 @@ export default {
 
 .root > footer
   text-align right
+  line-height 28px
 
   nav
     display inline-block
