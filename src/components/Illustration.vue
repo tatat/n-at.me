@@ -59,16 +59,13 @@ export default {
 
 <style lang="stylus" scoped>
 .illustration
-  display table
+  display flex
   width 100%
   min-height 600px
 
   > .inner
     padding 8px 16px
     width 1280px
-    display table-cell
-    vertical-align middle
-    text-align center
 
   img
     width 1280px
@@ -80,9 +77,26 @@ export default {
     font-weight bold
 
   ul.links
-    list-style-type square
-    padding-left 1.65em
+    list-style-type none
+    padding 0
 
     > li
       line-height 1.5em
+      font-size 0.9em
+
+      a
+        overflow-wrap break-word
+        word-wrap break-word
+
+
+@media screen and (max-width: 541px)
+  .illustration
+    min-height 0
+
+    > .inner
+      padding 2vw 3vw
+      width 94vw
+
+    img
+      width 94vw
 </style>

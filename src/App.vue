@@ -100,4 +100,18 @@ export default {
 
   small
     margin-left 16px
+
+@media screen and (max-width: 541px)
+  .root > header > .inner,
+  .root > footer > .inner
+    padding 2vw 3vw
+
+  .root > footer
+    text-align left
+
+    nav
+      margin-left -16px
+
+    small
+      margin-left 0
 </style>
