@@ -15,5 +15,5 @@ npm run dev
 npm run build
 
 # build and deploy
-npm run publish
+firebase deploy
 ```
