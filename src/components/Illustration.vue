@@ -62,6 +62,8 @@ export default {
   display flex
   width 100%
   min-height 600px
+  justify-content center
+  align-items center
 
   > .inner
     padding 8px 16px
