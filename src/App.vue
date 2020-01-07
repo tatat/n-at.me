@@ -30,7 +30,7 @@
           li
             a(href="./images/banner.png") Banner
 
-      small.copyright &copy; 2017 tatあt
+      small.copyright &copy; 2020 tatあt
 </template>
 
 <script>
