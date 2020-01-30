@@ -56,6 +56,7 @@ const items = [
   { "id": ["7vN"], "category": "original", "title": "the end of whitenote - Foilverb & Sourin", "links": ["https://bigbrother404.bandcamp.com/album/the-end-of-whitenote"] },
   { "id": ["b8A"], "category": "original", "title": "drip" },
   { "id": ["H5p"], "category": "original", "title": "2020" },
+  { "id": ["9Zx"], "category": "original", "title": "balloon" },
 ]
 
 items.forEach(item => {
