@@ -3,7 +3,7 @@ article.illustration
   transition(name="fade-in")
     .inner(v-if="ready")
       template(v-if="illustration")
-        router-link(:to="{ name: 'index' }")
+        router-link.image(:to="{ name: 'index' }")
           img(:src="illustrationPath")
         .illustration-meta
           p.title {{ title }}
@@ -66,13 +66,21 @@ export default {
   align-items center
 
   > .inner
-    padding 8px 16px
-    width 1280px
+    max-width 1280px
+    overflow hidden
+
+  a.image
+    display block
+    box-sizing border-box
+    padding 8px 16px 0 16px
+    width 100%
 
   img
-    width 1280px
+    width 100%
+    display block
 
 .illustration-meta
+  padding 0 16px 8px 16px
   text-align left
 
   .title
@@ -95,10 +103,6 @@ export default {
   .illustration
     min-height 0
 
-    > .inner
-      padding 2vw 3vw
-      width 94vw
-
-    img
-      width 94vw
+    a.image
+      padding 8px 0 0 0
 </style>
