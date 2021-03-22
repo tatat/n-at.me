@@ -89,7 +89,7 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: true,
-    overlay: true
+    overlay: true,
   },
   performance: { hints: false },
   plugins: [
