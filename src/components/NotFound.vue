@@ -2,7 +2,7 @@
 article.errors
   .inner
     h1
-      router-link(v-bind:to="{ name: 'index' }") Not found
+      router-link(:to="{ name: 'index' }") Not found
 </template>
 
 <script>

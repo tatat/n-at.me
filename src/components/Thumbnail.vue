@@ -1,8 +1,8 @@
 <template lang="pug">
-a.thumbnail(@click.prevent="onClick", v-bind:data-id="id", v-bind:data-source-path="illustrationPath")
+a.thumbnail(@click.prevent="onClick", :data-id="id", :data-source-path="illustrationPath")
   .loading(v-if="loading")
-  .inner(v-bind:style="thumbnailStyle")
-    .placeholder(v-bind:style="thumbnailStyle") {{ title }}
+  .inner(:style="thumbnailStyle")
+    .placeholder(:style="thumbnailStyle") {{ title }}
 </template>
 
 <script>

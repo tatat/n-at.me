@@ -3,15 +3,15 @@ article.illustration
   transition(name="fade-in")
     .inner(v-if="ready")
       template(v-if="illustration")
-        router-link(v-bind:to="{ name: 'index' }")
-          img(v-bind:src="illustrationPath")
+        router-link(:to="{ name: 'index' }")
+          img(:src="illustrationPath")
         .illustration-meta
           p.title {{ title }}
           ul.links(v-if="links")
             li.link(v-for="link in links")
-              a(v-bind:href="link") {{ link }}
+              a(:href="link") {{ link }}
       template(v-else)
-        router-link(v-if="ready" v-bind:to="{ name: 'index' }")
+        router-link(v-if="ready" :to="{ name: 'index' }")
           .not-found Not found
 </template>
 

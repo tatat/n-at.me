@@ -10,7 +10,7 @@ article.illustrations
           v-for="illustration in illustrationsByCategory(category)"
           :key="illustration.primary_key"
         )
-          Thumbnail(v-bind:illustration="illustration")
+          Thumbnail(:illustration="illustration")
 </template>
 
 <script>

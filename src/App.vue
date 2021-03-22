@@ -3,7 +3,7 @@
   header
     .inner
       h1
-        router-link(v-bind:to="{ name: 'index' }") {{ title }}
+        router-link(:to="{ name: 'index' }") {{ title }}
 
   #content
     .inner
