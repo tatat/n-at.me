@@ -2,6 +2,8 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const { VueLoaderPlugin } = require('vue-loader')
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -10,60 +12,72 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/',
-    filename: 'bundle-[hash].js'
+    filename: 'bundle-[chunkhash].js'
   },
   module: {
     rules: [
       {
         test: /\.css$/,
-        use: [ 'vue-style-loader', 'css-loader' ],
+        use: [
+          'vue-style-loader',
+          { loader: 'css-loader',
+            options: {
+              sourceMap: true,
+              importLoaders: 1,
+              url: false,
+            }
+          },
+          'postcss-loader',
+        ],
+      },
+      {
+        test: /\.styl(us)?$/,
+        use: [
+          'vue-style-loader',
+          { loader: 'css-loader',
+            options: {
+              sourceMap: true,
+              importLoaders: 2,
+              url: false,
+            }
+          },
+          'postcss-loader',
+          {
+            loader: 'stylus-loader',
+            options: { sourceMap: true }
+          },
+        ],
       },
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          loaders: {
-            css: ['vue-style-loader', {
-              loader: 'css-loader',
-              options: { minimize: isProduction, sourceMap: isProduction }
-            }],
-            postcss: ['vue-style-loader', {
-              loader: 'css-loader',
-              options: { minimize: isProduction, sourceMap: isProduction }
-            }],
-            stylus: ['vue-style-loader', {
-              loader: 'css-loader',
-              options: { minimize: isProduction, sourceMap: isProduction }
-            }, {
-              loader: 'stylus-loader',
-              options: { minimize: isProduction, sourceMap: isProduction }
-            }],
-            styl: ['vue-style-loader', {
-              loader: 'css-loader',
-              options: { minimize: isProduction, sourceMap: isProduction }
-            }, {
-              loader: 'stylus-loader',
-              options: { minimize: isProduction, sourceMap: isProduction }
-            }]
-          }
-        }
+        use: ['vue-loader'],
       },
       {
         test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        use: ['babel-loader'],
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
-        loader: 'file-loader',
-        options: {
-          name: '[name].[ext]?[hash]'
-        }
+        use: [
+          { loader: 'file-loader',
+            options: {
+              name: '[name].[ext]?[hash]'
+            }
+          }
+        ],
       },
       {
         test: /\.pug$/,
-        loader: 'pug-loader'
-      }
+        oneOf: [
+          {
+            exclude: /\.vue$/,
+            use: ['raw-loader', 'pug-plain-loader']
+          }, {
+            use: ['pug-plain-loader']
+          }
+        ],
+      },
     ]
   },
   resolve: {
@@ -75,27 +89,30 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: true,
-    noInfo: true,
     overlay: true
   },
   performance: { hints: false },
   plugins: [
+    new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'src/index.pug',
       inject: true
     }),
-    new CopyWebpackPlugin([{
-      context: 'static',
-      from: '**/*',
-      to: path.join(__dirname, 'dist')
-    }])
+    new CopyWebpackPlugin({
+      patterns: [{
+        context: 'static',
+        from: '**/*',
+        to: path.join(__dirname, 'dist')
+      }],
+    }),
   ],
-  devtool: '#eval-source-map',
+  devtool: 'eval-source-map',
 }
 
 if (isProduction) {
-  module.exports.devtool = '#source-map'
+  module.exports.devtool = 'source-map'
+
   // http://vue-loader.vuejs.org/en/workflow/production.html
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.DefinePlugin({
@@ -103,12 +120,14 @@ if (isProduction) {
         NODE_ENV: '"production"'
       }
     }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: { warnings: false }
-    }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
   ])
+
+  module.exports.optimization = module.exports.optimization || {}
+  module.exports.optimization.minimizer = module.exports.optimization.minimizer || []
+
+  module.exports.optimization.minimizer.push(
+    new UglifyJsPlugin({
+      sourceMap: true,
+    })
+  )
 }
