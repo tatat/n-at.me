@@ -8,7 +8,7 @@ article.illustrations
           h2 {{ category }}
         .tile(
           v-for="illustration in illustrationsByCategory(category)"
-          key="illustration.primary_key"
+          :key="illustration.primary_key"
         )
           Thumbnail(v-bind:illustration="illustration")
 </template>
