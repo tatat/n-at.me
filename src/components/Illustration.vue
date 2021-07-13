@@ -66,7 +66,7 @@ export default {
   align-items center
 
   > .inner
-    max-width 1280px
+    max-width 1312px
     overflow hidden
 
   a.image
