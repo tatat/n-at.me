@@ -57,7 +57,9 @@ const items = [
   { "id": ["b8A"], "category": "original", "title": "drip" },
   { "id": ["H5p"], "category": "original", "title": "2020" },
   { "id": ["9Zx"], "category": "original", "title": "balloon" },
+  { "id": ["3Ey"], "category": "original", "title": "海と水槽 - ", "links": ["https://open.spotify.com/track/136q63ldu3DkIrRN3yvmwX?si=17aad4e542a94a8b", "https://music.youtube.com/playlist?list=OLAK5uy_kd56YCLnCjxpY-BMV6nVnTa9aIGBTxAxk&feature=share", "https://music.apple.com/jp/album/%E6%B5%B7%E3%81%A8%E6%B0%B4%E6%A7%BD-single/1574881503"] },
   { "id": ["n4A"], "category": "original", "title": "patch" },
+  { "id": ["1O0"], "category": "original", "title": "ん" },
 ]
 
 items.forEach(item => {
