@@ -39,6 +39,7 @@ const style = css`
     background-position: 100%;
     mix-blend-mode: lighten;
     opacity: 0.5;
+    transform: translate3d(0);
   }
 
   &:hover:before {

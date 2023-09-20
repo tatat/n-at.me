@@ -1,33 +1,38 @@
 'use client'
 
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import Link from 'next/link'
 
-const styles = {
-  container: css`
-    display: flex;
-    gap: 1rem;
-    justify-content: end;
-    align-items: center;
-    position: relative;
-    padding: 8px 16px;
+const useStyles = () => {
+  const theme = useTheme()
 
-    @media (max-width: 480px) {
-      flex-direction: column;
-      align-items: flex-end;
-    }
-  `,
-  links: css`
-    display: flex;
-    gap: 1rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  return {
+    container: css`
+      display: flex;
+      gap: 1rem;
+      justify-content: end;
+      align-items: center;
+      position: relative;
+      padding: 8px ${theme.tokens.padding.small};
 
-    a {
-      display: inline-block;
-    }
-  `,
+      @media (max-width: ${theme.breakpoints.small}) {
+        flex-direction: column;
+        align-items: flex-end;
+        padding: 8px ${theme.tokens.padding.small};
+      }
+    `,
+    links: css`
+      display: flex;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+
+      a {
+        display: inline-block;
+      }
+    `,
+  }
 }
 
 export type FooterProps = {
@@ -35,6 +40,8 @@ export type FooterProps = {
 }
 
 export function Footer({ className }: FooterProps) {
+  const styles = useStyles()
+
   return (
     <footer css={styles.container} className={className}>
       <ul css={styles.links}>

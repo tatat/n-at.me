@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const loadImage = (src: string): Promise<HTMLImageElement> => {
   const image = new Image()
@@ -19,12 +19,21 @@ const loadImage = (src: string): Promise<HTMLImageElement> => {
   })
 }
 
-export const useLoadImage = (src: string): HTMLImageElement | null => {
+export const useLoadImage = (src: string, minDelay = 0): HTMLImageElement | null => {
   const [image, setImage] = useState<HTMLImageElement>()
+  const startRef = useRef(Date.now())
 
   useEffect(() => {
-    loadImage(src).then(setImage)
-  }, [src])
+    loadImage(src).then((image) => {
+      const elapsed = Date.now() - startRef.current
+
+      if (elapsed < minDelay) {
+        setTimeout(() => setImage(image), minDelay - elapsed)
+      } else {
+        setImage(image)
+      }
+    })
+  }, [src, minDelay])
 
   return image ?? null
 }

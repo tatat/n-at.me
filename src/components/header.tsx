@@ -1,21 +1,29 @@
 'use client'
 
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import Link from 'next/link'
 
-const styles = {
-  container: css`
-    position: relative;
-    padding: 8px 16px;
-  `,
-  title: css`
-    font-size: 1.4rem;
-    margin: 0;
+const useStyles = () => {
+  const theme = useTheme()
 
-    a {
-      text-decoration: none;
-    }
-  `,
+  return {
+    container: css`
+      position: relative;
+      padding: 8px ${theme.tokens.padding.base};
+
+      @media (max-width: ${theme.breakpoints.small}) {
+        padding: 8px ${theme.tokens.padding.small};
+      }
+    `,
+    title: css`
+      font-size: 1.4rem;
+      margin: 0;
+
+      a {
+        text-decoration: none;
+      }
+    `,
+  }
 }
 
 export type HeaderProps = {
@@ -23,6 +31,8 @@ export type HeaderProps = {
 }
 
 export function Header({ className }: HeaderProps) {
+  const styles = useStyles()
+
   return (
     <header css={styles.container} className={className}>
       <h1 css={styles.title}>
