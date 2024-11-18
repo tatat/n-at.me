@@ -46,7 +46,7 @@ export function Footer({ className }: FooterProps) {
     <footer css={styles.container} className={className}>
       <ul css={styles.links}>
         <li>
-          <Link rel="noopener noreferrer" target="_blank" href="https://twitter.com/__________t_t_">
+          <Link rel="noopener noreferrer" target="_blank" href="https://x.com/__________t_t_">
             X
           </Link>
         </li>
@@ -63,6 +63,11 @@ export function Footer({ className }: FooterProps) {
         <li>
           <Link rel="noopener noreferrer" target="_blank" href="https://github.com/tatat">
             GitHub
+          </Link>
+        </li>
+        <li>
+          <Link rel="noopener noreferrer" target="_blank" href="https://ponponcreamsoda.web.app/">
+            Pon Pon Creamsoda
           </Link>
         </li>
       </ul>
