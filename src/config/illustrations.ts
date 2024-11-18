@@ -111,6 +111,7 @@ const config: IllustrationBase[] = [
   },
   { ids: ['n4A'], category: 'original', title: 'patch' },
   { ids: ['1O0'], category: 'original', title: 'ん' },
+  { ids: ['c9L'], category: 'original', title: 'security' },
 ]
 
 export const illustrations = config.reverse().map(
