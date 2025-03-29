@@ -50,11 +50,14 @@ const styles = {
     margin-top: 20px;
   `,
   canvasWrapper: css`
+    overflow: hidden;
     position: relative;
     margin-bottom: 20px;
   `,
   canvas: css`
     border: 1px solid #ddd;
+    max-width: 100%;
+    height: auto;
   `,
   cropOverlay: css`
     position: absolute;
@@ -238,8 +241,14 @@ export default function ThumbnailGenerator() {
       // Calculate mouse position relative to the canvas
       const canvas = sourceCanvasRef.current
       const rect = canvas.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
+
+      // Calculate scale factor between displayed size and actual canvas size
+      const scaleX = canvas.width / canvas.clientWidth
+      const scaleY = canvas.height / canvas.clientHeight
+
+      // Convert mouse position to canvas coordinates
+      const x = (e.clientX - rect.left) * scaleX
+      const y = (e.clientY - rect.top) * scaleY
 
       // Store the offset between mouse position and crop position
       setDragStart({
@@ -257,8 +266,14 @@ export default function ThumbnailGenerator() {
       // Calculate new position
       const canvas = sourceCanvasRef.current
       const rect = canvas.getBoundingClientRect()
-      const x = e.clientX - rect.left - dragStart.x
-      const y = e.clientY - rect.top - dragStart.y
+
+      // Calculate scale factor between displayed size and actual canvas size
+      const scaleX = canvas.width / canvas.clientWidth
+      const scaleY = canvas.height / canvas.clientHeight
+
+      // Convert mouse position to canvas coordinates
+      const x = (e.clientX - rect.left) * scaleX - dragStart.x
+      const y = (e.clientY - rect.top) * scaleY - dragStart.y
 
       // Constrain to canvas boundaries
       const newX = Math.max(0, Math.min(canvas.width - cropSize, x))
@@ -347,6 +362,24 @@ export default function ThumbnailGenerator() {
     }
   }, [cropSize, generatePreview, imageUrl])
 
+  // Handle window resize to update crop overlay
+  useEffect(() => {
+    if (!imageUrl) return
+
+    // Force re-render on window resize to update crop overlay position and size
+    const handleResize = () => {
+      // We just need to trigger a re-render, the crop overlay will be updated
+      // because it uses the current canvas dimensions in its style calculation
+      setCropPosition((prev) => ({ ...prev }))
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [imageUrl])
+
   // Generate random 3-character filename
   const generateRandomFilename = useCallback(() => {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -406,17 +439,19 @@ export default function ThumbnailGenerator() {
 
             <div css={styles.canvasWrapper} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
               <canvas ref={sourceCanvasRef} css={styles.canvas} />
-              <div
-                css={styles.cropOverlay}
-                style={{
-                  left: `${cropPosition.x}px`,
-                  top: `${cropPosition.y}px`,
-                  width: `${cropSize}px`,
-                  height: `${cropSize}px`,
-                }}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-              />
+              {sourceCanvasRef.current && (
+                <div
+                  css={styles.cropOverlay}
+                  style={{
+                    left: `${cropPosition.x * (sourceCanvasRef.current.clientWidth / sourceCanvasRef.current.width)}px`,
+                    top: `${cropPosition.y * (sourceCanvasRef.current.clientHeight / sourceCanvasRef.current.height)}px`,
+                    width: `${cropSize * (sourceCanvasRef.current.clientWidth / sourceCanvasRef.current.width)}px`,
+                    height: `${cropSize * (sourceCanvasRef.current.clientHeight / sourceCanvasRef.current.height)}px`,
+                  }}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                />
+              )}
             </div>
 
             <h2>Thumbnail Preview</h2>
