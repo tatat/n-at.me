@@ -363,22 +363,21 @@ export default function ThumbnailGenerator() {
   }, [cropSize, generatePreview, imageUrl])
 
   // Handle window resize to update crop overlay
+  const handleResize = useCallback(() => {
+    // We just need to trigger a re-render, the crop overlay will be updated
+    // because it uses the current canvas dimensions in its style calculation
+    setCropPosition((prev) => ({ ...prev }))
+  }, [])
+
   useEffect(() => {
     if (!imageUrl) return
-
-    // Force re-render on window resize to update crop overlay position and size
-    const handleResize = () => {
-      // We just need to trigger a re-render, the crop overlay will be updated
-      // because it uses the current canvas dimensions in its style calculation
-      setCropPosition((prev) => ({ ...prev }))
-    }
 
     window.addEventListener('resize', handleResize)
 
     return () => {
       window.removeEventListener('resize', handleResize)
     }
-  }, [imageUrl])
+  }, [imageUrl, handleResize])
 
   // Generate random 3-character filename
   const generateRandomFilename = useCallback(() => {
@@ -405,6 +404,22 @@ export default function ThumbnailGenerator() {
     link.click()
     document.body.removeChild(link)
   }, [filename, imageUrl])
+
+  // Handle contrast change
+  const handleContrastChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const newContrast = parseInt(e.target.value, 10)
+      setContrast(newContrast)
+      // Update preview with new contrast
+      generatePreview(cropPosition.x, cropPosition.y)
+    },
+    [cropPosition.x, cropPosition.y, generatePreview],
+  )
+
+  // Handle filename change
+  const handleFilenameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setFilename(e.target.value)
+  }, [])
 
   return (
     <Layout>
@@ -466,12 +481,7 @@ export default function ThumbnailGenerator() {
                 min="-100"
                 max="100"
                 value={contrast}
-                onChange={(e) => {
-                  const newContrast = parseInt(e.target.value, 10)
-                  setContrast(newContrast)
-                  // Update preview with new contrast
-                  generatePreview(cropPosition.x, cropPosition.y)
-                }}
+                onChange={handleContrastChange}
                 style={{ width: '100%', marginBottom: '15px' }}
               />
             </div>
@@ -482,7 +492,7 @@ export default function ThumbnailGenerator() {
               <input
                 type="text"
                 value={filename}
-                onChange={(e) => setFilename(e.target.value)}
+                onChange={handleFilenameChange}
                 placeholder="Filename (without extension)"
                 css={styles.filenameInput}
               />
