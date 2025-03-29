@@ -112,6 +112,9 @@ const config: IllustrationBase[] = [
   { ids: ['n4A'], category: 'original', title: 'patch' },
   { ids: ['1O0'], category: 'original', title: 'ん' },
   { ids: ['c9L'], category: 'original', title: 'security' },
+  { ids: ['XOk'], category: 'original', title: 'Atelier', links: ['https://www.youtube.com/watch?v=xEQK0oNfqFI'] },
+  { ids: ['dLG'], category: 'original', title: 'It seems so', links: ['https://www.youtube.com/watch?v=LAbft_tGemY'] },
+  { ids: ['Y7s'], category: 'original', title: 'Acceptable', links: ['https://www.youtube.com/watch?v=aHxsROHS6nk'] },
 ]
 
 export const illustrations = config.reverse().map(
