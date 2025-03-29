@@ -56,6 +56,11 @@ export function Footer({ className }: FooterProps) {
           </Link>
         </li>
         <li>
+          <Link rel="noopener noreferrer" target="_blank" href="https://www.youtube.com/@t-at-at">
+            YouTube
+          </Link>
+        </li>
+        <li>
           <Link rel="noopener noreferrer" target="_blank" href="https://soundcloud.com/tataaat">
             SoundCloud
           </Link>
