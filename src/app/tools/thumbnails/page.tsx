@@ -4,6 +4,12 @@ import { useState, useRef, useEffect, useCallback, ChangeEvent } from 'react'
 import { css } from '@emotion/react'
 import { Layout } from '@/components/layout'
 import Link from 'next/link'
+import {
+  generateRandomFilename,
+  resizeImageDimensions,
+  calculateCenteredCropPosition,
+  convertToGrayscaleWithContrast,
+} from './utils'
 
 const styles = {
   container: css`
@@ -116,6 +122,8 @@ const styles = {
   `,
 }
 
+const cropSize = 480 // Fixed crop size as per requirements
+
 export default function ThumbnailGenerator() {
   const [, setImageFile] = useState<File | null>(null)
   const [imageUrl, setImageUrl] = useState<string | null>(null)
@@ -124,112 +132,186 @@ export default function ThumbnailGenerator() {
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const [filename, setFilename] = useState('')
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null)
+  const [thumbnailReady, setThumbnailReady] = useState(false)
   const [contrast, setContrast] = useState(0) // Default contrast adjustment (0 = no change)
 
   const sourceCanvasRef = useRef<HTMLCanvasElement>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const cropSize = 480 // Fixed crop size as per requirements
-
-  // Apply contrast to a pixel value
-  const applyContrast = useCallback((value: number, contrastValue: number): number => {
-    // Normalize contrast from [-100, 100] to [-1, 1]
-    const factor = (259 * (contrastValue + 255)) / (255 * (259 - contrastValue))
-
-    // Apply contrast formula
-    const newValue = factor * (value - 128) + 128
-
-    // Clamp to [0, 255]
-    return Math.max(0, Math.min(255, newValue))
-  }, [])
 
   // Generate thumbnail preview
   const generatePreview = useCallback(
     (x: number, y: number) => {
-      if (!sourceCanvasRef.current || !previewCanvasRef.current) return
+      try {
+        if (!sourceCanvasRef.current || !previewCanvasRef.current) return
 
-      const sourceCanvas = sourceCanvasRef.current
-      const previewCanvas = previewCanvasRef.current
-      const sourceCtx = sourceCanvas.getContext('2d')
-      const previewCtx = previewCanvas.getContext('2d')
+        const sourceCanvas = sourceCanvasRef.current
+        const previewCanvas = previewCanvasRef.current
+        const sourceCtx = sourceCanvas.getContext('2d')
+        const previewCtx = previewCanvas.getContext('2d')
 
-      if (!sourceCtx || !previewCtx) return
+        if (!sourceCtx || !previewCtx) return
 
-      // Set preview canvas size (480x480 for the cropped area, doubled in width for side-by-side display)
-      previewCanvas.width = cropSize
-      previewCanvas.height = cropSize / 2 // Half scale as per requirements
+        // Make sure the crop coordinates are valid
+        const validX = Math.max(0, Math.min(sourceCanvas.width - cropSize, x))
+        const validY = Math.max(0, Math.min(sourceCanvas.height - cropSize, y))
 
-      // Get the cropped image data
-      const imageData = sourceCtx.getImageData(x, y, cropSize, cropSize)
+        // Set preview canvas size (480x480 for the cropped area, doubled in width for side-by-side display)
+        previewCanvas.width = cropSize
+        previewCanvas.height = cropSize / 2 // Half scale as per requirements
 
-      // Create a temporary canvas for the full-size concatenated image
-      const tempCanvas = document.createElement('canvas')
-      tempCanvas.width = cropSize * 2 // Double width for side-by-side
-      tempCanvas.height = cropSize
-      const tempCtx = tempCanvas.getContext('2d')
+        try {
+          // Get the cropped image data - this can fail if coordinates are invalid
+          const imageData = sourceCtx.getImageData(validX, validY, cropSize, cropSize)
 
-      if (!tempCtx) return
+          // Create a temporary canvas for the full-size concatenated image
+          const tempCanvas = document.createElement('canvas')
+          tempCanvas.width = cropSize * 2 // Double width for side-by-side
+          tempCanvas.height = cropSize
+          const tempCtx = tempCanvas.getContext('2d')
 
-      // Draw the original cropped image on the left side
-      tempCtx.putImageData(imageData, 0, 0)
+          if (!tempCtx) return
 
-      // Create grayscale version for the right side
-      const grayscaleImageData = sourceCtx.getImageData(x, y, cropSize, cropSize)
-      const data = grayscaleImageData.data
+          // Draw the original cropped image on the left side
+          tempCtx.putImageData(imageData, 0, 0)
 
-      // Convert to grayscale with contrast adjustment
-      for (let i = 0; i < data.length; i += 4) {
-        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3
+          // Create grayscale version for the right side
+          const grayscaleImageData = sourceCtx.getImageData(validX, validY, cropSize, cropSize)
 
-        // Apply contrast adjustment
-        const adjustedValue = applyContrast(avg, contrast)
+          // Convert to grayscale with contrast adjustment
+          convertToGrayscaleWithContrast(grayscaleImageData, contrast)
 
-        data[i] = adjustedValue // R
-        data[i + 1] = adjustedValue // G
-        data[i + 2] = adjustedValue // B
-        // data[i + 3] is alpha, unchanged
+          // Draw the grayscale image on the right side
+          tempCtx.putImageData(grayscaleImageData, cropSize, 0)
+
+          // Draw the concatenated image onto the preview canvas at half scale
+          previewCtx.drawImage(tempCanvas, 0, 0, cropSize * 2, cropSize, 0, 0, cropSize, cropSize / 2)
+
+          // Mark that we have a valid preview
+          setThumbnailReady(true)
+        } catch (err) {
+          console.error('Error generating preview:', err)
+          setError('Failed to generate preview. Try adjusting the crop area.')
+        }
+      } catch (err) {
+        console.error('Unexpected error in generatePreview:', err)
+        setError('An unexpected error occurred. Please try again.')
+      }
+    },
+    [contrast],
+  )
+
+  // Load image into canvas
+  const loadImageIntoCanvas = useCallback(
+    (url: string) => {
+      if (!sourceCanvasRef.current) {
+        console.error('Source canvas not available')
+        return
       }
 
-      // Draw the grayscale image on the right side
-      tempCtx.putImageData(grayscaleImageData, cropSize, 0)
+      const canvas = sourceCanvasRef.current
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        console.error('Canvas context not available')
+        return
+      }
 
-      // Draw the concatenated image onto the preview canvas at half scale
-      previewCtx.drawImage(tempCanvas, 0, 0, cropSize * 2, cropSize, 0, 0, cropSize, cropSize / 2)
+      console.log('Loading image from URL:', url)
+      const img = new Image()
 
-      // Update thumbnail URL
-      setThumbnailUrl(previewCanvas.toDataURL('image/jpeg', 0.9))
+      // Handle image loading errors
+      img.onerror = (e) => {
+        console.error('Error loading image:', e)
+        setError('Failed to load image. The file might be corrupted or inaccessible.')
+      }
+
+      img.onload = () => {
+        console.log('Image loaded successfully, dimensions:', img.width, 'x', img.height)
+        try {
+          // Resize image if needed
+          const { width, height } = resizeImageDimensions(img.width, img.height)
+          console.log('Resized dimensions:', width, 'x', height)
+
+          // Set canvas size to the resized dimensions
+          canvas.width = width
+          canvas.height = height
+
+          // Draw resized image on canvas
+          ctx.drawImage(img, 0, 0, width, height)
+
+          // Initialize crop position to center if possible
+          const { x: newX, y: newY } = calculateCenteredCropPosition(width, height, cropSize)
+          setCropPosition({ x: newX, y: newY })
+          console.log('Initial crop position:', newX, newY)
+
+          // Generate initial preview
+          generatePreview(newX, newY)
+        } catch (err) {
+          console.error('Error processing image:', err)
+          setError('Failed to process image. Please try another file.')
+        }
+      }
+
+      // Set the source after setting up event handlers
+      img.src = url
     },
-    [applyContrast, contrast, cropSize],
+    [generatePreview],
   )
 
   // Handle file selection
-  const handleFileChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return
+  const handleFileChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (!e.target.files || e.target.files.length === 0) return
 
-    const file = e.target.files[0]
-    if (!file.type.startsWith('image/')) {
-      setError('Please select a valid image file')
-      return
-    }
+      const file = e.target.files[0]
+      if (!file.type.startsWith('image/')) {
+        setError('Please select a valid image file')
+        return
+      }
 
-    setError(null)
-    setImageFile(file)
+      setError(null)
+      setImageFile(file)
 
-    // Generate default filename (original filename without extension)
-    const filenameParts = file.name.split('.')
-    filenameParts.pop() // Remove extension
-    const baseName = filenameParts.join('.')
-    setFilename(baseName)
+      // Generate default filename (original filename without extension)
+      const filenameParts = file.name.split('.')
+      filenameParts.pop() // Remove extension
+      const baseName = filenameParts.join('.')
+      setFilename(baseName)
 
-    // Create object URL for the image
-    const url = URL.createObjectURL(file)
-    setImageUrl(url)
+      try {
+        // Revoke previous URL if it exists and is a blob URL
+        if (imageUrl && imageUrl.startsWith('blob:')) {
+          try {
+            URL.revokeObjectURL(imageUrl)
+          } catch (err) {
+            console.error('Error revoking previous object URL:', err)
+          }
+        }
 
-    // Reset crop position and thumbnail
-    setCropPosition({ x: 0, y: 0 })
-    setThumbnailUrl(null)
-  }, [])
+        // Create object URL for the image
+        const url = URL.createObjectURL(file)
+
+        // Check if URL is valid
+        if (!url) {
+          throw new Error('Failed to create object URL')
+        }
+
+        // Set the new URL
+        setImageUrl(url)
+
+        // Reset crop position and thumbnail state
+        setCropPosition({ x: 0, y: 0 })
+        setThumbnailReady(false)
+
+        // Load the image into the canvas
+        loadImageIntoCanvas(url)
+      } catch (err) {
+        console.error('Error creating object URL:', err)
+        setError('Failed to load image. Please try again.')
+      }
+    },
+    [imageUrl, loadImageIntoCanvas],
+  )
 
   // Handle crop area dragging
   const handleMouseDown = useCallback(
@@ -282,7 +364,7 @@ export default function ThumbnailGenerator() {
       setCropPosition({ x: newX, y: newY })
       generatePreview(newX, newY)
     },
-    [cropSize, dragStart, generatePreview, isDragging],
+    [dragStart, generatePreview, isDragging],
   )
 
   const handleMouseUp = useCallback(() => {
@@ -291,76 +373,48 @@ export default function ThumbnailGenerator() {
 
   // Handle download
   const handleDownload = useCallback(() => {
-    if (!thumbnailUrl) return
+    try {
+      if (!thumbnailReady || !previewCanvasRef.current) return
 
-    const link = document.createElement('a')
-    link.href = thumbnailUrl
-    link.download = `${filename}.thumb.jpg`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }, [filename, thumbnailUrl])
+      // Create a fresh blob URL at the time of download
+      const previewCanvas = previewCanvasRef.current
+      const dataUrl = previewCanvas.toDataURL('image/jpeg', 0.9)
+
+      // Create download link
+      const link = document.createElement('a')
+      link.href = dataUrl
+      link.download = `${filename}.thumb.jpg`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      // No need to revoke the dataUrl since it's not a blob URL
+    } catch (err) {
+      console.error('Error downloading thumbnail:', err)
+      setError('Failed to download thumbnail. Please try again.')
+    }
+  }, [filename, thumbnailReady])
 
   // Reset everything
   const handleReset = useCallback(() => {
+    // Revoke the URL if it exists and is a blob URL
+    if (imageUrl && imageUrl.startsWith('blob:')) {
+      try {
+        URL.revokeObjectURL(imageUrl)
+      } catch (err) {
+        console.error('Error revoking object URL:', err)
+      }
+    }
+
     setImageFile(null)
     setImageUrl(null)
-    setThumbnailUrl(null)
+    setThumbnailReady(false)
     setError(null)
     setFilename('')
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
-  }, [])
-
-  // Load image into canvas when imageUrl changes
-  useEffect(() => {
-    if (!imageUrl || !sourceCanvasRef.current) return
-
-    const canvas = sourceCanvasRef.current
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const img = new Image()
-    img.onload = () => {
-      // Resize image if it's larger than 2560x2560
-      const MAX_SIZE = 2560
-      let width = img.width
-      let height = img.height
-
-      if (width > MAX_SIZE || height > MAX_SIZE) {
-        if (width > height) {
-          height = Math.round((height / width) * MAX_SIZE)
-          width = MAX_SIZE
-        } else {
-          width = Math.round((width / height) * MAX_SIZE)
-          height = MAX_SIZE
-        }
-      }
-
-      // Set canvas size to the resized dimensions
-      canvas.width = width
-      canvas.height = height
-
-      // Draw resized image on canvas
-      ctx.drawImage(img, 0, 0, width, height)
-
-      // Initialize crop position to center if possible
-      const newX = Math.max(0, Math.floor((width - cropSize) / 2))
-      const newY = Math.max(0, Math.floor((height - cropSize) / 2))
-      setCropPosition({ x: newX, y: newY })
-
-      // Generate initial preview
-      generatePreview(newX, newY)
-    }
-
-    img.src = imageUrl
-
-    // Clean up object URL when component unmounts or imageUrl changes
-    return () => {
-      URL.revokeObjectURL(imageUrl)
-    }
-  }, [cropSize, generatePreview, imageUrl])
+  }, [imageUrl])
 
   // Handle window resize to update crop overlay
   const handleResize = useCallback(() => {
@@ -379,39 +433,63 @@ export default function ThumbnailGenerator() {
     }
   }, [imageUrl, handleResize])
 
-  // Generate random 3-character filename
-  const generateRandomFilename = useCallback(() => {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-    let result = ''
-    for (let i = 0; i < 3; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length))
+  // Clean up resources when component unmounts
+  useEffect(() => {
+    return () => {
+      // Revoke the URL if it exists and is a blob URL
+      if (imageUrl && imageUrl.startsWith('blob:')) {
+        try {
+          URL.revokeObjectURL(imageUrl)
+        } catch (err) {
+          console.error('Error revoking object URL:', err)
+        }
+      }
     }
-    setFilename(result)
+  }, [imageUrl])
+
+  // Handle random filename generation
+  const handleGenerateRandomFilename = useCallback(() => {
+    setFilename(generateRandomFilename())
   }, [])
 
   // Download original image handler
   const handleDownloadOriginal = useCallback(() => {
-    if (!imageUrl || !sourceCanvasRef.current) return
+    try {
+      if (!imageUrl || !sourceCanvasRef.current) return
 
-    // Get the full canvas with the entire image
-    const sourceCanvas = sourceCanvasRef.current
+      // Get the full canvas with the entire image
+      const sourceCanvas = sourceCanvasRef.current
 
-    // Create a download link for the full image
-    const link = document.createElement('a')
-    link.href = sourceCanvas.toDataURL('image/jpeg', 1.0)
-    link.download = `${filename}.jpg`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+      // Create a fresh data URL at the time of download
+      const dataUrl = sourceCanvas.toDataURL('image/jpeg', 1.0)
+
+      // Create download link
+      const link = document.createElement('a')
+      link.href = dataUrl
+      link.download = `${filename}.jpg`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      // No need to revoke the dataUrl since it's not a blob URL
+    } catch (err) {
+      console.error('Error downloading original image:', err)
+      setError('Failed to download original image. Please try again.')
+    }
   }, [filename, imageUrl])
 
   // Handle contrast change
   const handleContrastChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      const newContrast = parseInt(e.target.value, 10)
-      setContrast(newContrast)
-      // Update preview with new contrast
-      generatePreview(cropPosition.x, cropPosition.y)
+      try {
+        const newContrast = parseInt(e.target.value, 10)
+        setContrast(newContrast)
+        // Update preview with new contrast
+        generatePreview(cropPosition.x, cropPosition.y)
+      } catch (err) {
+        console.error('Error changing contrast:', err)
+        setError('Failed to update contrast. Please try again.')
+      }
     },
     [cropPosition.x, cropPosition.y, generatePreview],
   )
@@ -447,79 +525,77 @@ export default function ThumbnailGenerator() {
           {error && <div css={styles.errorMessage}>{error}</div>}
         </form>
 
-        {imageUrl && (
-          <div css={styles.canvasContainer}>
-            <h2>Original Image</h2>
-            <p css={styles.instructions}>Drag the selection area to position the crop</p>
+        <div css={styles.canvasContainer} style={{ display: imageUrl ? 'flex' : 'none' }}>
+          <h2>Original Image</h2>
+          <p css={styles.instructions}>Drag the selection area to position the crop</p>
 
-            <div css={styles.canvasWrapper} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
-              <canvas ref={sourceCanvasRef} css={styles.canvas} />
-              {sourceCanvasRef.current && (
-                <div
-                  css={styles.cropOverlay}
-                  style={{
-                    left: `${cropPosition.x * (sourceCanvasRef.current.clientWidth / sourceCanvasRef.current.width)}px`,
-                    top: `${cropPosition.y * (sourceCanvasRef.current.clientHeight / sourceCanvasRef.current.height)}px`,
-                    width: `${cropSize * (sourceCanvasRef.current.clientWidth / sourceCanvasRef.current.width)}px`,
-                    height: `${cropSize * (sourceCanvasRef.current.clientHeight / sourceCanvasRef.current.height)}px`,
-                  }}
-                  onMouseDown={handleMouseDown}
-                  onMouseMove={handleMouseMove}
-                />
-              )}
-            </div>
-
-            <h2>Thumbnail Preview</h2>
-
-            <div>
-              <label htmlFor="contrast" style={{ display: 'block', marginBottom: '5px' }}>
-                Grayscale Contrast: {contrast}
-              </label>
-              <input
-                type="range"
-                id="contrast"
-                min="-100"
-                max="100"
-                value={contrast}
-                onChange={handleContrastChange}
-                style={{ width: '100%', marginBottom: '15px' }}
+          <div css={styles.canvasWrapper} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+            <canvas ref={sourceCanvasRef} css={styles.canvas} />
+            {sourceCanvasRef.current && (
+              <div
+                css={styles.cropOverlay}
+                style={{
+                  left: `${cropPosition.x * (sourceCanvasRef.current.clientWidth / sourceCanvasRef.current.width)}px`,
+                  top: `${cropPosition.y * (sourceCanvasRef.current.clientHeight / sourceCanvasRef.current.height)}px`,
+                  width: `${cropSize * (sourceCanvasRef.current.clientWidth / sourceCanvasRef.current.width)}px`,
+                  height: `${cropSize * (sourceCanvasRef.current.clientHeight / sourceCanvasRef.current.height)}px`,
+                }}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
               />
-            </div>
-
-            <canvas ref={previewCanvasRef} css={styles.previewCanvas} />
-
-            <div css={styles.controlsContainer}>
-              <input
-                type="text"
-                value={filename}
-                onChange={handleFilenameChange}
-                placeholder="Filename (without extension)"
-                css={styles.filenameInput}
-              />
-
-              <button
-                type="button"
-                css={styles.button}
-                onClick={generateRandomFilename}
-                title="Generate random 3-character filename"
-              >
-                Random
-              </button>
-
-              <button type="button" css={styles.button} onClick={handleDownload} disabled={!thumbnailUrl}>
-                Download Thumbnail
-              </button>
-
-              <button type="button" css={styles.button} onClick={handleDownloadOriginal} disabled={!imageUrl}>
-                Download Original
-              </button>
-
-              <button type="button" css={styles.button} onClick={handleReset}>
-                Reset
-              </button>
-            </div>
+            )}
           </div>
-        )}
+
+          <h2>Thumbnail Preview</h2>
+
+          <div>
+            <label htmlFor="contrast" style={{ display: 'block', marginBottom: '5px' }}>
+              Grayscale Contrast: {contrast}
+            </label>
+            <input
+              type="range"
+              id="contrast"
+              min="-100"
+              max="100"
+              value={contrast}
+              onChange={handleContrastChange}
+              style={{ width: '100%', marginBottom: '15px' }}
+            />
+          </div>
+
+          <canvas ref={previewCanvasRef} css={styles.previewCanvas} />
+
+          <div css={styles.controlsContainer}>
+            <input
+              type="text"
+              value={filename}
+              onChange={handleFilenameChange}
+              placeholder="Filename (without extension)"
+              css={styles.filenameInput}
+            />
+
+            <button
+              type="button"
+              css={styles.button}
+              onClick={handleGenerateRandomFilename}
+              title="Generate random 3-character filename"
+            >
+              Random
+            </button>
+
+            <button type="button" css={styles.button} onClick={handleDownload} disabled={!thumbnailReady}>
+              Download Thumbnail
+            </button>
+
+            <button type="button" css={styles.button} onClick={handleDownloadOriginal} disabled={!imageUrl}>
+              Download Original
+            </button>
+
+            <button type="button" css={styles.button} onClick={handleReset}>
+              Reset
+            </button>
+          </div>
+        </div>
 
         <div style={{ marginTop: '30px' }}>
           <Link href="/">Back to Home</Link>
