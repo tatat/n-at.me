@@ -1,0 +1,17 @@
+# Development Guide
+
+## Project Overview
+
+This project is a personal website built with Next.js and Emotion, designed to showcase my illustrations and other works. It uses Static Site Generation (SSG) and is published on Firebase Hosting.
+
+## Code Formatting
+
+- No Trailing Semicolons: Avoid using trailing semicolons.
+- Indentation: Use 2 spaces per indentation level.
+- Trailing Commas: Use trailing commas in multiline arrays, objects, and type definitions.
+
+## Naming Conventions
+
+- Use camelCase for variables, functions, and object properties.
+- Use PascalCase for classes and TypeScript types/interfaces.
+- Use UPPER_SNAKE_CASE for constants that are truly immutable.

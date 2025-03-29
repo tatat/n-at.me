@@ -1,0 +1,13 @@
+{
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:22",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "styled-components.vscode-styled-components",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "saoudrizwan.claude-dev"
+      ]
+    }
+  }
+}
