@@ -135,6 +135,7 @@ export default function ThumbnailGenerator() {
   const [filename, setFilename] = useState('')
   const [thumbnailReady, setThumbnailReady] = useState(false)
   const [contrast, setContrast] = useState(0) // Default contrast adjustment (0 = no change)
+  const [slopeFactor, setSlopeFactor] = useState(259) // Default slope factor
 
   const sourceCanvasRef = useRef<HTMLCanvasElement>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement>(null)
@@ -180,7 +181,7 @@ export default function ThumbnailGenerator() {
           const grayscaleImageData = sourceCtx.getImageData(validX, validY, cropSize, cropSize)
 
           // Convert to grayscale with contrast adjustment
-          convertToGrayscaleWithContrast(grayscaleImageData, contrast)
+          convertToGrayscaleWithContrast(grayscaleImageData, contrast, slopeFactor)
 
           // Draw the grayscale image on the right side
           tempCtx.putImageData(grayscaleImageData, cropSize, 0)
@@ -199,7 +200,7 @@ export default function ThumbnailGenerator() {
         setError('An unexpected error occurred. Please try again.')
       }
     },
-    [contrast],
+    [contrast, slopeFactor],
   )
 
   // Load image into canvas
@@ -490,6 +491,22 @@ export default function ThumbnailGenerator() {
     [cropPosition.x, cropPosition.y, generatePreview],
   )
 
+  // Handle slope factor change
+  const handleSlopeFactorChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      try {
+        const newSlopeFactor = parseInt(e.target.value, 10)
+        setSlopeFactor(newSlopeFactor)
+        // Update preview with new slope factor
+        generatePreview(cropPosition.x, cropPosition.y)
+      } catch (err) {
+        console.error('Error changing slope factor:', err)
+        setError('Failed to update slope factor. Please try again.')
+      }
+    },
+    [cropPosition.x, cropPosition.y, generatePreview],
+  )
+
   // Handle filename change
   const handleFilenameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setFilename(e.target.value)
@@ -555,6 +572,21 @@ export default function ThumbnailGenerator() {
               max="100"
               value={contrast}
               onChange={handleContrastChange}
+              style={{ width: '100%', marginBottom: '15px' }}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="slopeFactor" style={{ display: 'block', marginBottom: '5px' }}>
+              Contrast Slope Factor: {slopeFactor}
+            </label>
+            <input
+              type="range"
+              id="slopeFactor"
+              min="101"
+              max="500"
+              value={slopeFactor}
+              onChange={handleSlopeFactorChange}
               style={{ width: '100%', marginBottom: '15px' }}
             />
           </div>

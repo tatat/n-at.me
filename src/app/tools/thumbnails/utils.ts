@@ -2,11 +2,22 @@
  * Apply contrast adjustment to a pixel value
  * @param value - The pixel value to adjust (0-255)
  * @param contrastValue - The contrast adjustment value (-100 to 100)
+ * @param slopeFactor - The contrast slope factor (default: 259)
  * @returns The adjusted pixel value (0-255)
+ * @throws Error if slopeFactor is invalid (must be > 100 to avoid division by zero)
  */
-export const applyContrast = (value: number, contrastValue: number): number => {
+export const applyContrast = (value: number, contrastValue: number, slopeFactor: number = 259): number => {
+  // Validate slopeFactor
+  if (!Number.isFinite(slopeFactor)) {
+    throw new Error('slopeFactor must be a finite number')
+  }
+
+  if (slopeFactor <= 100) {
+    throw new Error('slopeFactor must be greater than 100 to avoid division by zero')
+  }
+
   // Normalize contrast from [-100, 100] to [-1, 1]
-  const factor = (259 * (contrastValue + 255)) / (255 * (259 - contrastValue))
+  const factor = (slopeFactor * (contrastValue + 255)) / (255 * (slopeFactor - contrastValue))
 
   // Apply contrast formula
   const newValue = factor * (value - 128) + 128
@@ -76,17 +87,22 @@ export const calculateCenteredCropPosition = (
  * Convert an image region to grayscale with contrast adjustment
  * @param imageData - The ImageData object to process
  * @param contrast - The contrast adjustment value (-100 to 100)
+ * @param slopeFactor - The contrast slope factor (default: 259)
  * @returns The processed ImageData object
  */
-export const convertToGrayscaleWithContrast = (imageData: ImageData, contrast: number): ImageData => {
+export const convertToGrayscaleWithContrast = (
+  imageData: ImageData,
+  contrast: number,
+  slopeFactor: number = 259,
+): ImageData => {
   const data = imageData.data
 
   // Convert to grayscale with contrast adjustment
   for (let i = 0; i < data.length; i += 4) {
     const avg = (data[i] + data[i + 1] + data[i + 2]) / 3
 
-    // Apply contrast adjustment
-    const adjustedValue = applyContrast(avg, contrast)
+    // Apply contrast adjustment with the specified slope factor
+    const adjustedValue = applyContrast(avg, contrast, slopeFactor)
 
     data[i] = adjustedValue // R
     data[i + 1] = adjustedValue // G
