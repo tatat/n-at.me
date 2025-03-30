@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback, ChangeEvent } from 'react'
 import { css } from '@emotion/react'
 import { Layout } from '@/components/layout'
 import Link from 'next/link'
+import { loadImage } from '@/utils/image'
 import {
   generateRandomFilename,
   resizeImageDimensions,
@@ -217,43 +218,38 @@ export default function ThumbnailGenerator() {
       }
 
       console.log('Loading image from URL:', url)
-      const img = new Image()
 
-      // Handle image loading errors
-      img.onerror = (e) => {
-        console.error('Error loading image:', e)
-        setError('Failed to load image. The file might be corrupted or inaccessible.')
-      }
+      loadImage(url)
+        .then((img) => {
+          console.log('Image loaded successfully, dimensions:', img.width, 'x', img.height)
+          try {
+            // Resize image if needed
+            const { width, height } = resizeImageDimensions(img.width, img.height)
+            console.log('Resized dimensions:', width, 'x', height)
 
-      img.onload = () => {
-        console.log('Image loaded successfully, dimensions:', img.width, 'x', img.height)
-        try {
-          // Resize image if needed
-          const { width, height } = resizeImageDimensions(img.width, img.height)
-          console.log('Resized dimensions:', width, 'x', height)
+            // Set canvas size to the resized dimensions
+            canvas.width = width
+            canvas.height = height
 
-          // Set canvas size to the resized dimensions
-          canvas.width = width
-          canvas.height = height
+            // Draw resized image on canvas
+            ctx.drawImage(img, 0, 0, width, height)
 
-          // Draw resized image on canvas
-          ctx.drawImage(img, 0, 0, width, height)
+            // Initialize crop position to center if possible
+            const { x: newX, y: newY } = calculateCenteredCropPosition(width, height, cropSize)
+            setCropPosition({ x: newX, y: newY })
+            console.log('Initial crop position:', newX, newY)
 
-          // Initialize crop position to center if possible
-          const { x: newX, y: newY } = calculateCenteredCropPosition(width, height, cropSize)
-          setCropPosition({ x: newX, y: newY })
-          console.log('Initial crop position:', newX, newY)
-
-          // Generate initial preview
-          generatePreview(newX, newY)
-        } catch (err) {
-          console.error('Error processing image:', err)
-          setError('Failed to process image. Please try another file.')
-        }
-      }
-
-      // Set the source after setting up event handlers
-      img.src = url
+            // Generate initial preview
+            generatePreview(newX, newY)
+          } catch (err) {
+            console.error('Error processing image:', err)
+            setError('Failed to process image. Please try another file.')
+          }
+        })
+        .catch((err) => {
+          console.error('Error loading image:', err)
+          setError('Failed to load image. The file might be corrupted or inaccessible.')
+        })
     },
     [generatePreview],
   )
