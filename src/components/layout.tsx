@@ -1,11 +1,12 @@
 'use client'
 
 import { css, useTheme } from '@emotion/react'
-import { Header } from './header'
+import { Header, type MenuId } from './header'
 import { Footer } from './footer'
 
 export type LayoutProps = {
   children: React.ReactNode
+  current?: MenuId
 }
 
 const useStyles = () => {
@@ -35,13 +36,13 @@ const useStyles = () => {
   }
 }
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ children, current }: LayoutProps) {
   const styles = useStyles()
 
   return (
     <main css={styles.container}>
       <div css={styles.top}>
-        <Header />
+        <Header current={current} />
         <div css={styles.content}>{children}</div>
       </div>
       <Footer />

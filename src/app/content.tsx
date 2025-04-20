@@ -60,7 +60,7 @@ const styles = (() => {
 
 export function HomeContent() {
   return (
-    <Layout>
+    <Layout current="home">
       <div css={styles.content}>
         {illustrationsByCategory.map(({ category, illustrations: items }) => (
           <React.Fragment key={category}>
