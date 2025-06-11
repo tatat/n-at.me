@@ -1,6 +1,6 @@
-# .clinerules
+# CLAUDE.md
 
-This file provides guidance when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Commands
 
@@ -64,16 +64,3 @@ This separation optimizes for SSG by running server logic at build time while ke
 - `trailingSlash: true` required for Firebase Hosting
 - TypeScript strict mode enabled
 - Path alias `@/*` maps to `./src/*`
-
-## Code Formatting
-
-- No Trailing Semicolons: Avoid using trailing semicolons
-- Indentation: Use 2 spaces per indentation level
-- Quotes: Use single quotes for strings
-- Trailing Commas: Use trailing commas in multiline arrays, objects, and type definitions
-
-## Naming Conventions
-
-- Use camelCase for variables, functions, and object properties
-- Use PascalCase for classes and TypeScript types/interfaces
-- Use UPPER_SNAKE_CASE for constants that are truly immutable
