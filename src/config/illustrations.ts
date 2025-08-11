@@ -118,6 +118,7 @@ const config: IllustrationBase[] = [
   { ids: ['tCR'], category: 'original', title: 'Tracelapse', links: ['https://www.youtube.com/watch?v=Jg74X3tscXo'] },
   { ids: ['2LF'], category: 'original', title: 'Hide and Dry', links: ['https://www.youtube.com/watch?v=0vk--eXge_s'] },
   { ids: ['i2t'], category: 'original', title: 'Reflexure', links: ['https://www.youtube.com/watch?v=I5lGZHRtLrQ'] },
+  { ids: ['e4c'], category: 'original', title: 'Morph', links: ['https://www.youtube.com/watch?v=knlsMNm4nwQ'] },
 ]
 
 export const illustrations = config.reverse().map(
