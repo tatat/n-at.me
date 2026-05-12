@@ -136,10 +136,27 @@ export default function ThumbnailGenerator() {
   const [thumbnailReady, setThumbnailReady] = useState(false)
   const [contrast, setContrast] = useState(0) // Default contrast adjustment (0 = no change)
   const [slopeFactor, setSlopeFactor] = useState(259) // Default slope factor
+  const [canvasMetrics, setCanvasMetrics] = useState<{
+    clientWidth: number
+    clientHeight: number
+    width: number
+    height: number
+  } | null>(null)
 
   const sourceCanvasRef = useRef<HTMLCanvasElement>(null)
   const previewCanvasRef = useRef<HTMLCanvasElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const updateCanvasMetrics = useCallback(() => {
+    const canvas = sourceCanvasRef.current
+    if (!canvas) return
+    setCanvasMetrics({
+      clientWidth: canvas.clientWidth,
+      clientHeight: canvas.clientHeight,
+      width: canvas.width,
+      height: canvas.height,
+    })
+  }, [])
 
   // Generate thumbnail preview
   const generatePreview = useCallback(
@@ -235,6 +252,9 @@ export default function ThumbnailGenerator() {
             // Draw resized image on canvas
             ctx.drawImage(img, 0, 0, width, height)
 
+            // Capture canvas metrics for the crop overlay
+            updateCanvasMetrics()
+
             // Initialize crop position to center if possible
             const { x: newX, y: newY } = calculateCenteredCropPosition(width, height, cropSize)
             setCropPosition({ x: newX, y: newY })
@@ -252,7 +272,7 @@ export default function ThumbnailGenerator() {
           setError('Failed to load image. The file might be corrupted or inaccessible.')
         })
     },
-    [generatePreview],
+    [generatePreview, updateCanvasMetrics],
   )
 
   // Handle file selection
@@ -415,10 +435,8 @@ export default function ThumbnailGenerator() {
 
   // Handle window resize to update crop overlay
   const handleResize = useCallback(() => {
-    // We just need to trigger a re-render, the crop overlay will be updated
-    // because it uses the current canvas dimensions in its style calculation
-    setCropPosition((prev) => ({ ...prev }))
-  }, [])
+    updateCanvasMetrics()
+  }, [updateCanvasMetrics])
 
   useEffect(() => {
     if (!imageUrl) return
@@ -544,14 +562,14 @@ export default function ThumbnailGenerator() {
 
           <div css={styles.canvasWrapper} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
             <canvas ref={sourceCanvasRef} css={styles.canvas} />
-            {sourceCanvasRef.current && (
+            {canvasMetrics && (
               <div
                 css={styles.cropOverlay}
                 style={{
-                  left: `${cropPosition.x * (sourceCanvasRef.current.clientWidth / sourceCanvasRef.current.width)}px`,
-                  top: `${cropPosition.y * (sourceCanvasRef.current.clientHeight / sourceCanvasRef.current.height)}px`,
-                  width: `${cropSize * (sourceCanvasRef.current.clientWidth / sourceCanvasRef.current.width)}px`,
-                  height: `${cropSize * (sourceCanvasRef.current.clientHeight / sourceCanvasRef.current.height)}px`,
+                  left: `${cropPosition.x * (canvasMetrics.clientWidth / canvasMetrics.width)}px`,
+                  top: `${cropPosition.y * (canvasMetrics.clientHeight / canvasMetrics.height)}px`,
+                  width: `${cropSize * (canvasMetrics.clientWidth / canvasMetrics.width)}px`,
+                  height: `${cropSize * (canvasMetrics.clientHeight / canvasMetrics.height)}px`,
                 }}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
