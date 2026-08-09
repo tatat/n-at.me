@@ -121,6 +121,12 @@ const config: IllustrationBase[] = [
   { ids: ['e4c'], category: 'original', title: 'Morph', links: ['https://www.youtube.com/watch?v=knlsMNm4nwQ'] },
   { ids: ['5Hs'], category: 'original', title: 'Collapse', links: ['https://www.youtube.com/watch?v=JvkWTe9r-K0'] },
   { ids: ['YxE'], category: 'original', title: 'Scatter', links: ['https://www.youtube.com/watch?v=M3mxON08pzc'] },
+  {
+    ids: ['hfO'],
+    category: 'original',
+    title: 'アタラヨカ（ATARAYOKA）- Catch Me Yesterday',
+    links: ['https://www.youtube.com/watch?v=JzsnjhYb3zw'],
+  },
 ]
 
 export const illustrations = config.reverse().map(
