@@ -127,6 +127,13 @@ const config: IllustrationBase[] = [
     title: 'アタラヨカ（ATARAYOKA）- Catch Me Yesterday',
     links: ['https://www.youtube.com/watch?v=JzsnjhYb3zw'],
   },
+  {
+    ids: ['ouH'],
+    category: 'original',
+    title: 'チャバネロフスキーオーケストラ - haikei / sanagi',
+    links: ['https://lnkfi.re/4cbJQ4M6'],
+  },
+  { ids: ['q9x'], category: 'original', title: 'Epilogue', links: ['https://www.youtube.com/watch?v=_SRdS8f-7U4'] },
 ]
 
 export const illustrations = config.reverse().map(
